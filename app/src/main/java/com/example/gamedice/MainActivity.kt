@@ -4,12 +4,23 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-// Estado que guarda o progresso dos dois jogadores e o valor do dado
+// ==========================================
+// 1º e 2º COMMIT: ESTADO E LOGICA (Mantidos)
+// ==========================================
 data class GameState(
     val jogadorAtivo: Int = 1,
     val valorDado: Int = 1,
@@ -19,7 +30,6 @@ data class GameState(
     val vencedor: String = ""
 )
 
-// Adiciona esta classe LOGO ABAIXO do GameState e ACIMA da MainActivity:
 class GameManager {
     var uiState = kotlinx.coroutines.flow.MutableStateFlow(GameState())
         private set
@@ -65,43 +75,96 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    // A interface gráfica será injetada aqui nos próximos commits
+                    // A interface gráfica será ligada aqui no 6º commit
                 }
             }
         }
     }
 }
 
-@androidx.compose.runtime.Composable
+// ==========================================
+// 3º COMMIT: PROGRESSO VISUAL (Mantido)
+// ==========================================
+@Composable
 fun ProgressoVisual(nome: String, conquistados: Set<Int>, isAtivo: Boolean) {
-    androidx.compose.foundation.layout.Column {
-        androidx.compose.material3.Text(
+    Column {
+        Text(
             text = if (isAtivo) "$nome 🎲 (A jogar)" else nome,
             fontSize = 18.sp,
             style = MaterialTheme.typography.titleMedium,
-            color = if (isAtivo) MaterialTheme.colorScheme.primary else androidx.compose.ui.graphics.Color.Unspecified
+            color = if (isAtivo) MaterialTheme.colorScheme.primary else Color.Unspecified
         )
-        androidx.compose.foundation.layout.Row(
-            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp),
-            modifier = androidx.compose.foundation.layout.Modifier.padding(top = 8.dp)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier.padding(top = 8.dp)
         ) {
             for (i in 1..6) {
                 val obtido = conquistados.contains(i)
-                androidx.compose.foundation.layout.Box(
-                    modifier = androidx.compose.foundation.layout.Modifier
+                Box(
+                    modifier = Modifier
                         .size(45.dp)
-                        .background(color = if (obtido) androidx.compose.ui.graphics.Color(0xFF4CAF50) else androidx.compose.ui.graphics.Color.LightGray, shape = androidx.compose.foundation.shape.CircleShape)
-                        .background(1.5.dp, androidx.compose.ui.graphics.Color.Gray, androidx.compose.foundation.shape.CircleShape),
-                    contentAlignment = androidx.compose.ui.Alignment.Center
+                        .background(color = if (obtido) Color(0xFF4CAF50) else Color.LightGray, shape = CircleShape),
+                    contentAlignment = Alignment.Center
                 ) {
-                    androidx.compose.material3.Text(
+                    Text(
                         text = i.toString(),
-                        color = if (obtido) androidx.compose.ui.graphics.Color.White else androidx.compose.ui.graphics.Color.DarkGray,
+                        color = if (obtido) Color.White else Color.DarkGray,
                         fontSize = 18.sp,
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
             }
+        }
+    }
+}
+
+// ==========================================
+// 4º COMMIT: ENTRADA DA GAMESCREEN E DADO GIGANTE
+// ==========================================
+@Composable
+fun GameScreen(
+    state: GameState,
+    onLancar: () -> Unit,
+    onReiniciar: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val todosOsNumeros = setOf(1, 2, 3, 4, 5, 6)
+    val faltamJogador1 = todosOsNumeros - state.numerosJogador1
+    val faltamJogador2 = todosOsNumeros - state.numerosJogador2
+
+    Column(
+        modifier = modifier.fillMaxSize().padding(28.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Text(
+            text = if (state.jogoTerminado) "Fim do Jogo!" else "Vez do Jogador ${state.jogadorAtivo}",
+            fontSize = 32.sp,
+            style = MaterialTheme.typography.headlineLarge,
+            color = if (state.jogoTerminado) Color(0xFF4CAF50) else MaterialTheme.colorScheme.primary
+        )
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            ProgressoVisual(nome = "Jogador 1", conquistados = state.numerosJogador1, isAtivo = state.jogadorAtivo == 1 && !state.jogoTerminado)
+            ProgressoVisual(nome = "Jogador 2", conquistados = state.numerosJogador2, isAtivo = state.jogadorAtivo == 2 && !state.jogoTerminado)
+        }
+
+        // O Dado Gigante Centralizado
+        Box(
+            modifier = Modifier
+                .size(180.dp)
+                .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(24.dp)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = state.valorDado.toString(),
+                fontSize = 80.sp,
+                style = MaterialTheme.typography.displayLarge,
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
         }
     }
 }
