@@ -190,4 +190,3 @@ fun GameScreen(
         }
     } // <- Esta era a chaveta que faltava para fechar a GameScreen!
 }
-}
