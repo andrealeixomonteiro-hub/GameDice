@@ -5,16 +5,14 @@ plugins {
 
 android {
     namespace = "com.example.gamedice"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+
+    // Configuração ideal e emparelhada para as novas bibliotecas do ecossistema Android
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.gamedice"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 37 // Atualizado para 37 para remover o aviso de compatibilidade
         versionCode = 1
         versionName = "1.0"
 
