@@ -71,3 +71,37 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
+@androidx.compose.runtime.Composable
+fun ProgressoVisual(nome: String, conquistados: Set<Int>, isAtivo: Boolean) {
+    androidx.compose.foundation.layout.Column {
+        androidx.compose.material3.Text(
+            text = if (isAtivo) "$nome 🎲 (A jogar)" else nome,
+            fontSize = 18.sp,
+            style = MaterialTheme.typography.titleMedium,
+            color = if (isAtivo) MaterialTheme.colorScheme.primary else androidx.compose.ui.graphics.Color.Unspecified
+        )
+        androidx.compose.foundation.layout.Row(
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(10.dp),
+            modifier = androidx.compose.foundation.layout.Modifier.padding(top = 8.dp)
+        ) {
+            for (i in 1..6) {
+                val obtido = conquistados.contains(i)
+                androidx.compose.foundation.layout.Box(
+                    modifier = androidx.compose.foundation.layout.Modifier
+                        .size(45.dp)
+                        .background(color = if (obtido) androidx.compose.ui.graphics.Color(0xFF4CAF50) else androidx.compose.ui.graphics.Color.LightGray, shape = androidx.compose.foundation.shape.CircleShape)
+                        .background(1.5.dp, androidx.compose.ui.graphics.Color.Gray, androidx.compose.foundation.shape.CircleShape),
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    androidx.compose.material3.Text(
+                        text = i.toString(),
+                        color = if (obtido) androidx.compose.ui.graphics.Color.White else androidx.compose.ui.graphics.Color.DarkGray,
+                        fontSize = 18.sp,
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+        }
+    }
+}
