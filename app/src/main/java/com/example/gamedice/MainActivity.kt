@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 // ==========================================
-// 1º e 2º COMMIT: ESTADO E LOGICA (Mantidos)
+// 1º e 2º COMMIT: ESTADO E LOGICA
 // ==========================================
 data class GameState(
     val jogadorAtivo: Int = 1,
@@ -83,7 +84,7 @@ class MainActivity : ComponentActivity() {
 }
 
 // ==========================================
-// 3º COMMIT: PROGRESSO VISUAL (Mantido)
+// 3º COMMIT: PROGRESSO VISUAL
 // ==========================================
 @Composable
 fun ProgressoVisual(nome: String, conquistados: Set<Int>, isAtivo: Boolean) {
@@ -119,7 +120,7 @@ fun ProgressoVisual(nome: String, conquistados: Set<Int>, isAtivo: Boolean) {
 }
 
 // ==========================================
-// 4º COMMIT: ENTRADA DA GAMESCREEN E DADO GIGANTE
+// 4º e 5º COMMIT: GAMESCREEN COM OS BOTÕES DINÂMICOS
 // ==========================================
 @Composable
 fun GameScreen(
@@ -166,5 +167,27 @@ fun GameScreen(
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
         }
-    }
+
+        // [5º COMMIT]: Lógica condicional dos botões de controlo
+        if (state.jogoTerminado) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "🏆 ${state.vencedor} Ganhou!", fontSize = 26.sp, color = Color(0xFF4CAF50))
+                Spacer(Modifier.height(16.dp))
+                Button(
+                    onClick = onReiniciar,
+                    modifier = Modifier.fillMaxWidth().height(60.dp)
+                ) {
+                    Text("Jogar Novamente", fontSize = 18.sp)
+                }
+            }
+        } else {
+            Button(
+                onClick = onLancar,
+                modifier = Modifier.fillMaxWidth().height(65.dp)
+            ) {
+                Text("Lançar Dado 🎲", fontSize = 20.sp)
+            }
+        }
+    } // <- Esta era a chaveta que faltava para fechar a GameScreen!
+}
 }
